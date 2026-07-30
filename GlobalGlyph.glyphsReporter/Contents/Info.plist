@@ -13,9 +13,16 @@
 		<key>CFBundleName</key>
 		<string>globalGlyph</string>
 		<key>CFBundleShortVersionString</key>
-		<string>2.1</string>
+		<string>2.2</string>
 		<key>CFBundleVersion</key>
-		<string>22</string>
+		<string>23</string>
+		<key>UpdateFeedURL</key>
+		<string>
+			https://raw.githubusercontent.com/mekkablue/Show-Global-Glyph/refs/heads/master/GlobalGlyph.glyphsReporter/Contents/Info.plist</string>
+		<key>productPageURL</key>
+		<string>https://github.com/mekkablue/Show-Global-Glyph</string>
+		<key>productReleaseNotes</key>
+		<string>Glyphs 4 compatibility</string>
 		<key>NSHumanReadableCopyright</key>
 		<string>Copyright, Nevu, 2016</string>
 		<key>NSPrincipalClass</key>
