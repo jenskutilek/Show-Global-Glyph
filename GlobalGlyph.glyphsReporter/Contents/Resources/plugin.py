@@ -64,14 +64,14 @@ class classGlobalGlyph(ReporterPlugin):
     def background(self, layer):
         try:
             self.drawGlobalGlyph(layer)
-        except:
+        except:  # noqa: E722
             self.logError(traceback.format_exc())
 
     @objc.python_method
     def inactiveLayerBackground(self, layer):
         try:
             self.drawGlobalGlyph(layer)
-        except:
+        except:  # noqa: E722
             self.logError(traceback.format_exc())
 
     @objc.python_method
