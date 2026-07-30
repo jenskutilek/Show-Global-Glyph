@@ -30,8 +30,8 @@ class classGlobalGlyph(ReporterPlugin):
         self.globalGlyphName = "_global"
 
     @objc.python_method
-    def drawGlobalGlyph(self, Layer):
-        Glyph = Layer.parent
+    def drawGlobalGlyph(self, layer):
+        Glyph = layer.parent
         if Glyph.name == self.globalGlyphName:
             return
 
@@ -40,7 +40,7 @@ class classGlobalGlyph(ReporterPlugin):
         if globalGlyph is None:
             return
 
-        thisMasterID = Layer.master.id
+        thisMasterID = layer.master.id
         globalLayer = globalGlyph.layers[thisMasterID]
 
         # draw path AND components for strokes and form:
@@ -60,21 +60,21 @@ class classGlobalGlyph(ReporterPlugin):
             globalBezierPath.stroke()
 
     @objc.python_method
-    def background(self, Layer):
+    def background(self, layer):
         try:
-            self.drawGlobalGlyph(Layer)
+            self.drawGlobalGlyph(layer)
         except:
             self.logError(traceback.format_exc())
 
     @objc.python_method
-    def inactiveLayerBackground(self, Layer):
+    def inactiveLayerBackground(self, layer):
         try:
-            self.drawGlobalGlyph(Layer)
+            self.drawGlobalGlyph(layer)
         except:
             self.logError(traceback.format_exc())
 
     @objc.python_method
-    def needsExtraMainOutlineDrawingForInactiveLayer_(self, Layer):
+    def needsExtraMainOutlineDrawingForInactiveLayer_(self, layer):
         return True
 
     @objc.python_method
