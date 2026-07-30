@@ -32,11 +32,11 @@ class classGlobalGlyph(ReporterPlugin):
 
     @objc.python_method
     def drawGlobalGlyph(self, layer):
-        Glyph = layer.parent
-        if Glyph.name == self.globalGlyphName:
+        glyph = layer.parent
+        if glyph.name == self.globalGlyphName:
             return
 
-        Font = Glyph.parent
+        Font = glyph.parent
         globalGlyph = Font.glyphForName_(self.globalGlyphName)
         if globalGlyph is None:
             return
