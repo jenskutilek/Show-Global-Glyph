@@ -11,6 +11,7 @@ import traceback
 #
 ###########################################################################################################
 import objc
+from AppKit import NSColor
 from GlyphsApp import *
 from GlyphsApp.plugins import *
 
