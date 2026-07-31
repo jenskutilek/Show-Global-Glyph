@@ -43,7 +43,7 @@ class classGlobalGlyph(ReporterPlugin):
             OPEN_PATHS_COLOR_KEY, (0.0, 0.0, 1.0, 0.9)
         )
         self.closedPathsColor = Glyphs.defaults.get(
-            OPEN_PATHS_COLOR_KEY, (1.0, 0.7, 0.2, 1.0)
+            CLOSED_PATHS_COLOR_KEY, (1.0, 0.7, 0.2, 1.0)
         )
         self.openPathsFillColor = Glyphs.defaults.get(
             OPEN_PATHS_FILL_COLOR_KEY, (0.0, 0.0, 1.0, 0.1)
