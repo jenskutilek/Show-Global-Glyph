@@ -25,6 +25,11 @@ OPEN_PATHS_FILL_COLOR_KEY = f"{plugin_id}OpenPathsFillColor"
 GLOBAL_GLYPH_NAME_KEY = f"{plugin_id}GlyphName"
 
 
+def get_ns_color(key) -> NSColor:
+    values = Glyphs.defaults[key]
+    return NSColor.colorWithCalibratedRed_green_blue_alpha_(*values)
+
+
 class classGlobalGlyph(ReporterPlugin):
     @objc.python_method
     def settings(self):
@@ -48,6 +53,12 @@ class classGlobalGlyph(ReporterPlugin):
             (OPEN_PATHS_COLOR_KEY, (0.0, 0.0, 1.0, 0.9)),
         ):
             Glyphs.defaults[key] = Glyphs.defaults.get(key, default)
+
+        # Cache the color objects
+        self.openPathsColor = get_ns_color(OPEN_PATHS_COLOR_KEY)
+        self.closedPathsColor = get_ns_color(CLOSED_PATHS_COLOR_KEY)
+        self.openPathsFillColor = get_ns_color(OPEN_PATHS_FILL_COLOR_KEY)
+        self.closedPathsFillColor = get_ns_color(CLOSED_PATHS_FILL_COLOR_KEY)
 
         if Glyphs.versionNumber < 4.0:
             return
@@ -114,26 +125,18 @@ class classGlobalGlyph(ReporterPlugin):
         globalBezierPath = globalLayer.completeBezierPath
         if globalBezierPath:
             if Glyphs.defaults[FILL_CLOSED_PATHS_KEY]:
-                NSColor.colorWithCalibratedRed_green_blue_alpha_(
-                    *Glyphs.defaults[CLOSED_PATHS_FILL_COLOR_KEY]
-                ).set()
+                self.closedPathsFillColor.set()
                 globalBezierPath.fill()
-            NSColor.colorWithCalibratedRed_green_blue_alpha_(
-                *Glyphs.defaults[CLOSED_PATHS_COLOR_KEY]
-            ).set()
+            self.closedPathsColor.set()
             globalBezierPath.stroke()
 
         # draw path for open forms
         globalBezierPath = globalLayer.openBezierPath
         if globalBezierPath:
             if Glyphs.defaults[FILL_OPEN_PATHS_KEY]:
-                NSColor.colorWithCalibratedRed_green_blue_alpha_(
-                    *Glyphs.defaults[OPEN_PATHS_FILL_COLOR_KEY]
-                ).set()
+                self.openPathsFillColor.set()
                 globalBezierPath.fill()
-            NSColor.colorWithCalibratedRed_green_blue_alpha_(
-                *Glyphs.defaults[OPEN_PATHS_COLOR_KEY]
-            ).set()
+            self.openPathsColor.set()
             globalBezierPath.stroke()
 
     @objc.python_method
