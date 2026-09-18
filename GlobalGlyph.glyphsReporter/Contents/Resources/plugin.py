@@ -22,6 +22,7 @@ CLOSED_PATHS_COLOR_KEY = f"{plugin_id}ClosedPathsColor"
 OPEN_PATHS_COLOR_KEY = f"{plugin_id}OpenPathsColor"
 CLOSED_PATHS_FILL_COLOR_KEY = f"{plugin_id}ClosedPathsFillColor"
 OPEN_PATHS_FILL_COLOR_KEY = f"{plugin_id}OpenPathsFillColor"
+GLOBAL_GLYPH_NAME_KEY = f"{plugin_id}GlyphName"
 
 
 class classGlobalGlyph(ReporterPlugin):
@@ -36,30 +37,73 @@ class classGlobalGlyph(ReporterPlugin):
             }
         )
 
-        self.globalGlyphName = "_global"
-        self.fillOpenPaths = Glyphs.defaults.get(FILL_OPEN_PATHS_KEY, True)
-        self.fillClosedPaths = Glyphs.defaults.get(FILL_CLOSED_PATHS_KEY, True)
-        self.openPathsColor = Glyphs.defaults.get(
-            OPEN_PATHS_COLOR_KEY, (0.0, 0.0, 1.0, 0.9)
-        )
-        self.closedPathsColor = Glyphs.defaults.get(
-            CLOSED_PATHS_COLOR_KEY, (1.0, 0.7, 0.2, 1.0)
-        )
-        self.openPathsFillColor = Glyphs.defaults.get(
-            OPEN_PATHS_FILL_COLOR_KEY, (0.0, 0.0, 1.0, 0.1)
-        )
-        self.closedPathsFillColor = Glyphs.defaults.get(
-            CLOSED_PATHS_FILL_COLOR_KEY, (1.0, 0.7, 0.2, 0.1)
+        # Set defaults if they don't exist
+        for key, default in (
+            (GLOBAL_GLYPH_NAME_KEY, "_global"),
+            (FILL_CLOSED_PATHS_KEY, True),
+            (FILL_OPEN_PATHS_KEY, True),
+            (CLOSED_PATHS_FILL_COLOR_KEY, (1.0, 0.7, 1.2, 0.1)),
+            (CLOSED_PATHS_COLOR_KEY, (1.0, 0.7, 0.2, 1.0)),
+            (OPEN_PATHS_FILL_COLOR_KEY, (0.0, 0.0, 1.0, 0.1)),
+            (OPEN_PATHS_COLOR_KEY, (0.0, 0.0, 1.0, 0.9)),
+        ):
+            Glyphs.defaults[key] = Glyphs.defaults.get(key, default)
+
+        if Glyphs.versionNumber < 4.0:
+            return
+
+        # Glyphs 4: Make settings editable from the Advanced Preferences dialog
+        GSAdvancedPreferences = objc.lookUpClass("GSAdvancedPreferences")
+        GSAdvancedPreferences.sharedAdvancedPreferences().registerEntries_forCategory_(
+            [
+                {
+                    "title": "Global glyph name",
+                    "key": GLOBAL_GLYPH_NAME_KEY,
+                    "type": "string",
+                },
+                {
+                    "title": "Closed paths color",
+                    "key": CLOSED_PATHS_COLOR_KEY,
+                    "type": "color",
+                },
+                {
+                    "title": "Fill closed paths",
+                    "key": FILL_CLOSED_PATHS_KEY,
+                    "type": "bool",
+                },
+                {
+                    "title": "Closed paths fill color",
+                    "key": CLOSED_PATHS_FILL_COLOR_KEY,
+                    "type": "color",
+                },
+                {
+                    "title": "Open paths color",
+                    "key": OPEN_PATHS_COLOR_KEY,
+                    "type": "color",
+                },
+                {
+                    "title": "Fill open paths",
+                    "key": FILL_OPEN_PATHS_KEY,
+                    "type": "bool",
+                },
+                {
+                    "title": "Open paths fill color",
+                    "key": OPEN_PATHS_FILL_COLOR_KEY,
+                    "type": "color",
+                },
+            ],
+            "Global Glyph",
         )
 
     @objc.python_method
     def drawGlobalGlyph(self, layer):
         glyph = layer.parent
-        if glyph.name == self.globalGlyphName:
+        globalGlyphName = Glyphs.defaults[GLOBAL_GLYPH_NAME_KEY]
+        if glyph.name == globalGlyphName:
             return
 
         Font = glyph.parent
-        globalGlyph = Font.glyphForName_(self.globalGlyphName)
+        globalGlyph = Font.glyphForName_(globalGlyphName)
         if globalGlyph is None:
             return
 
@@ -69,25 +113,27 @@ class classGlobalGlyph(ReporterPlugin):
         # draw path AND components for strokes and form:
         globalBezierPath = globalLayer.completeBezierPath
         if globalBezierPath:
-            if self.fillClosedPaths:
+            if Glyphs.defaults[FILL_CLOSED_PATHS_KEY]:
                 NSColor.colorWithCalibratedRed_green_blue_alpha_(
-                    *self.closedPathsFillColor
+                    *Glyphs.defaults[CLOSED_PATHS_FILL_COLOR_KEY]
                 ).set()
                 globalBezierPath.fill()
             NSColor.colorWithCalibratedRed_green_blue_alpha_(
-                *self.closedPathsColor
+                *Glyphs.defaults[CLOSED_PATHS_COLOR_KEY]
             ).set()
             globalBezierPath.stroke()
 
         # draw path for open forms
         globalBezierPath = globalLayer.openBezierPath
         if globalBezierPath:
-            if self.fillOpenPaths:
+            if Glyphs.defaults[FILL_OPEN_PATHS_KEY]:
                 NSColor.colorWithCalibratedRed_green_blue_alpha_(
-                    *self.openPathsFillColor
+                    *Glyphs.defaults[OPEN_PATHS_FILL_COLOR_KEY]
                 ).set()
                 globalBezierPath.fill()
-            NSColor.colorWithCalibratedRed_green_blue_alpha_(*self.openPathsColor).set()
+            NSColor.colorWithCalibratedRed_green_blue_alpha_(
+                *Glyphs.defaults[OPEN_PATHS_COLOR_KEY]
+            ).set()
             globalBezierPath.stroke()
 
     @objc.python_method
