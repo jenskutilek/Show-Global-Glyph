@@ -25,7 +25,7 @@ OPEN_PATHS_FILL_COLOR_KEY = f"{plugin_id}OpenPathsFillColor"
 GLOBAL_GLYPH_NAME_KEY = f"{plugin_id}GlyphName"
 
 
-def nsc(r, g, b, a) -> NSColor:
+def nsc(r: float, g: float, b: float, a: float) -> NSColor:
     return NSColor.colorWithCalibratedRed_green_blue_alpha_(r, g, b, a)
 
 
