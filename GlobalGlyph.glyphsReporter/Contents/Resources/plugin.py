@@ -11,7 +11,7 @@ import traceback
 #
 ###########################################################################################################
 import objc
-from AppKit import NSColor, NSGraphicsContext
+from AppKit import NSColor, NSGraphicsContext, NSKeyedArchiver
 from GlyphsApp import Glyphs
 from GlyphsApp.plugins import ReporterPlugin
 
@@ -27,6 +27,15 @@ GLOBAL_GLYPH_NAME_KEY = f"{plugin_id}GlyphName"
 
 def nsc(r, g, b, a) -> NSColor:
     return NSColor.colorWithCalibratedRed_green_blue_alpha_(r, g, b, a)
+
+
+def nsc_arch(r: float, g: float, b: float, a: float):
+    result, _err = (
+        NSKeyedArchiver.archivedDataWithRootObject_requiringSecureCoding_error_(
+            nsc(r, g, b, a), True, None
+        )
+    )
+    return result
 
 
 class classGlobalGlyph(ReporterPlugin):
@@ -56,10 +65,10 @@ class classGlobalGlyph(ReporterPlugin):
                 GLOBAL_GLYPH_NAME_KEY: "_global",
                 FILL_CLOSED_PATHS_KEY: True,
                 FILL_OPEN_PATHS_KEY: True,
-                # CLOSED_PATHS_FILL_COLOR_KEY: (1.0, 0.7, 1.2, 0.1),
-                # CLOSED_PATHS_COLOR_KEY: (1.0, 0.7, 0.2, 1.0),
-                # OPEN_PATHS_FILL_COLOR_KEY: (0.0, 0.0, 1.0, 0.1),
-                # OPEN_PATHS_COLOR_KEY: (0.0, 0.0, 1.0, 0.9),
+                CLOSED_PATHS_FILL_COLOR_KEY: nsc_arch(1.0, 0.7, 1.2, 0.1),
+                CLOSED_PATHS_COLOR_KEY: nsc_arch(1.0, 0.7, 0.2, 1.0),
+                OPEN_PATHS_FILL_COLOR_KEY: nsc_arch(0.0, 0.0, 1.0, 0.1),
+                OPEN_PATHS_COLOR_KEY: nsc_arch(0.0, 0.0, 1.0, 0.9),
             }
         )
 
