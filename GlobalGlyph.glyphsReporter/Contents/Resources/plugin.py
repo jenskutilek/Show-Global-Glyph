@@ -124,9 +124,13 @@ class classGlobalGlyph(ReporterPlugin):
         thisMasterID = layer.master.id
         globalLayer = globalGlyph.layers[thisMasterID]
 
+        NSGraphicsContext.saveGraphicsState()
+        scaledLineWidth = 1 / self.getScale()
+
         # Draw closed paths and components
         globalBezierPath = globalLayer.completeBezierPath
         if globalBezierPath:
+            globalBezierPath.setLineWidth_(scaledLineWidth)
             if Glyphs.defaults[FILL_CLOSED_PATHS_KEY]:
                 Glyphs.colorDefaults[CLOSED_PATHS_FILL_COLOR_KEY].set()
                 globalBezierPath.fill()
@@ -136,11 +140,14 @@ class classGlobalGlyph(ReporterPlugin):
         # Draw open paths
         globalBezierPath = globalLayer.openBezierPath
         if globalBezierPath:
+            globalBezierPath.setLineWidth_(scaledLineWidth)
             if Glyphs.defaults[FILL_OPEN_PATHS_KEY]:
                 Glyphs.colorDefaults[OPEN_PATHS_FILL_COLOR_KEY].set()
                 globalBezierPath.fill()
             Glyphs.colorDefaults[OPEN_PATHS_COLOR_KEY].set()
             globalBezierPath.stroke()
+
+        NSGraphicsContext.restoreGraphicsState()
 
     @objc.python_method
     def background(self, layer):
